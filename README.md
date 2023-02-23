@@ -5,3 +5,5 @@ REQUIRMENTS FOR RUN APPLICATION:
 1)pip install "fastapi[all]"
 2)pip install python-multipart
 3)pip install jinja2
+//runserver
+python -m uvicorn main:app --reload
