@@ -41,7 +41,7 @@ async def uploadF(filetoUpload : UploadFile = File(...)):
     if filetoUpload.filename[-4:] == '.csv':
         string_interessed_file_name = filetoUpload.filename.replace(filetoUpload.filename[-4:], '')
         f = open(filetoUpload.filename, 'r+', encoding='utf-8-sig')
-        prima_linea = f.readline()
+        header = f.readline()
         cont = f.readlines()
         f.close()
         valori_puliti = []
@@ -58,14 +58,10 @@ async def uploadF(filetoUpload : UploadFile = File(...)):
             nl2 = nl1.replace(';', ',')
             valori_puliti_2.append(nl2)
 
-        for k in prima_linea:
-            if k == ';':
-                re.sub(k , '', prima_linea)
 
-        header = []
-        for g in prima_linea:
-            c = g.split(',')
-            header.append(c)
+
+        prima_linea = header.split(';')
+        print(prima_linea)
 
         valori_puliti_3 = []
         for v in valori_puliti_2:
@@ -77,7 +73,7 @@ async def uploadF(filetoUpload : UploadFile = File(...)):
         z = open(file_name, "w")
         z.write(
             '<?xml version="1.0" encoding = "UTF-8"?>\n<Prestazione xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  ' +
-            str(header[1]) + "=" "'" + valori_puliti_3[0][0] + "' " + str(header[0]) + "=" + "'" + valori_puliti_3[0][
+            prima_linea[1] + "=" "'" + valori_puliti_3[0][0] + "' " + prima_linea[0] + "=" + "'" + valori_puliti_3[0][
                 1] + "'" + ">")
         second_line = z.write('\n<IdentificativiRichiesta>')
         third_line = z.write('\n<' + prima_linea[2] + '>' + valori_puliti_3[0][2] + '/<' + prima_linea[2] + '>')
@@ -88,7 +84,7 @@ async def uploadF(filetoUpload : UploadFile = File(...)):
         for h in valori_puliti_3:
             l = open(file_name, "a")
             sixth_line = l.write('\n<DatiPdr>')
-            l.write('\n<' + str(prima_linea[4]) + '>' + h[4] + '/<' + prima_linea[4] + '>')
+            l.write('\n<' + prima_linea[4] + '>' + h[4] + '/<' + prima_linea[4] + '>')
             l.write('\n<' + prima_linea[5] + '>' + h[5] + '/<' + prima_linea[5] + '>')
             l.write('\n<' + prima_linea[7] + '>' + h[7] + '/<' + prima_linea[7] + '>')
             l.write('\n<' + prima_linea[8] + '>' + h[8] + '/<' + prima_linea[8] + '>')
