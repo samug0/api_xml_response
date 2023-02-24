@@ -61,7 +61,6 @@ async def uploadF(filetoUpload : UploadFile = File(...)):
 
 
         prima_linea = header.split(';')
-        print(prima_linea)
 
         valori_puliti_3 = []
         for v in valori_puliti_2:
