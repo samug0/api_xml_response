@@ -1,12 +1,12 @@
+import logging
 import os
 import shutil
 import re
 from fastapi import FastAPI, Request, File, UploadFile, Form
 from fastapi import HTTPException
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from starlette.responses import FileResponse
-
 app = FastAPI()
 
 
@@ -30,9 +30,10 @@ async def uploadFile( request: Request, filetoupload: str = Form(...)):
 
 @app.post('/upload')
 async def uploadF(filetoUpload : UploadFile = File(...)):
+
+
     with open(f'{filetoUpload.filename}', 'wb') as f:
         shutil.copyfileobj(filetoUpload.file, f)
-
 
 
     os.getcwd()
@@ -71,7 +72,7 @@ async def uploadF(filetoUpload : UploadFile = File(...)):
             new_el = v.split(',')
             valori_puliti_3.append(new_el)
 
-        file_name = "myxml.xml"
+        file_name = string_interessed_file_name + '.xml'
         # apro il file e sceivo intestazione, con cod utente e distr
         z = open(file_name, "w")
         z.write(
@@ -79,18 +80,18 @@ async def uploadF(filetoUpload : UploadFile = File(...)):
             str(header[1]) + "=" "'" + valori_puliti_3[0][0] + "' " + str(header[0]) + "=" + "'" + valori_puliti_3[0][
                 1] + "'" + ">")
         second_line = z.write('\n<IdentificativiRichiesta>')
-        third_line = z.write('\n<' + str(header[2]) + '>' + valori_puliti_3[0][2] + '/<' + str(header[2]) + '>')
-        foruth_line = z.write('\n<' + str(header[3]) + '>' + valori_puliti_3[0][3] + '/<' + str(header[3]) + '>')
+        third_line = z.write('\n<' + prima_linea[2] + '>' + valori_puliti_3[0][2] + '/<' + prima_linea[2] + '>')
+        foruth_line = z.write('\n<' + prima_linea[3] + '>' + valori_puliti_3[0][3] + '/<' + prima_linea[3] + '>')
         fifth_line = z.write('\n</IdentificativiRichiesta>')
         z.close()
         # scrivo tutti i dati pdr
         for h in valori_puliti_3:
             l = open(file_name, "a")
             sixth_line = l.write('\n<DatiPdr>')
-            l.write('\n<' + str(header[4]) + '>' + h[4] + '/<' + str(header[4]) + '>')
-            l.write('\n<' + str(header[5]) + '>' + h[5] + '/<' + str(header[5]) + '>')
-            l.write('\n<' + str(header[7]) + '>' + h[7] + '/<' + str(header[7]) + '>')
-            l.write('\n<' + str(header[8]) + '>' + h[8] + '/<' + str(header[8]) + '>')
+            l.write('\n<' + str(prima_linea[4]) + '>' + h[4] + '/<' + prima_linea[4] + '>')
+            l.write('\n<' + prima_linea[5] + '>' + h[5] + '/<' + prima_linea[5] + '>')
+            l.write('\n<' + prima_linea[7] + '>' + h[7] + '/<' + prima_linea[7] + '>')
+            l.write('\n<' + prima_linea[8] + '>' + h[8] + '/<' + prima_linea[8] + '>')
             l.write('\n</DatiPdr>')
             l.close()
         # chiudo il tag di apertura ed il file è pronto
@@ -98,11 +99,11 @@ async def uploadF(filetoUpload : UploadFile = File(...)):
         b.write('\n</Prestazione>')
         b.close()
 
-        link = '<link>' +os.getcwd() + '\\' + file_name + '</link>'
+        folder_path = 'C:\\Users\\User\\PycharmProjects\\api'
+        file_location = f'{folder_path}{os.sep}{file_name}'
+        return FileResponse(file_location, media_type='application/xml', filename=str(file_name))
 
-        path = os.getcwd() + '\\' + file_name
 
-        return {FileResponse(path=path, filename=string_interessed_file_name + '.xml')}
     else:
         raise HTTPException(status_code=500, detail='Extension file not valid!')
 
